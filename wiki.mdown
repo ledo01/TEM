@@ -1,0 +1,146 @@
+# How to use
+
+## Equipment set-up
+First, open the Julabo cooler and set the tank temperature. Wait until the wanted tank temperature is obtain before launching any script. Make sure that all three of the data acquisition equipment are on (Agilent MUX, BK8600 Power S source and the BK9201 electric load).
+
+## Framework
+### Structure of a script
+The framework as been made so that all program use this structure :
+1. Initialization : initialization of all the objects to be used (one for each DAQ equipment) and all the variables (like the data that will be saved to a file later on).
+2. Main Loop : The main loop is the place that you will do all your measurements, controlling/changing a variable, controlling the temperature, etc.
+3. Saving to a file : Once the experiment is done, save your collected data to a file for future analysis.
+
+### Objects
+All the interface with the DAQ equipment is done by using object. First, you will need to create an object for the source, the MUX and the load. By doing so, all the proper configuration will be done. Once an object is created, you can use it by employing a method of this object. A description of each object and all of its methods can be found in the next section.
+
+#### TempSensor
+This object allow to measure the temperature of the 8 RTD sensors. It's also used to display graphically those measurements.
+
+|Methods| Description  |
+|---|---|
+|`TempSensor(agilent)`|Constructor : This method is automatically used once the object is created.The argument is the object of the Agilent MUX.|
+|`getTemp(obj)`|This method return an array with the temperature of each RTDs going top to bottom. All the temperature recorded are also added to the class variable `temp`.|
+|`getDT(obj)`|This method is used to get the difference of temperature between the two faces of the TEM. The method return an array containing the difference of temperature, the temperature of the hot side and the temperature of the cold side (`[dT,T\_h,T\_c]`).|
+|`plotTemp(obj)`|This method plot 8 subgraph off the temperatures recorded since the initialization of the object.|
+
+|Class variables|Description|
+|---|---|
+|`temp`|Array of all the temperatures recorded of the 8 RTDs since the initialization of the object.|
+|`DT`|Array of all the difference of temperatures of each side of the TEM recorded since the initialization of the object.|
+|`T_H`|Array of all the temperatures of the hot side of the TEM since the initialization of the object.|
+|`T_C`|Array of all the temperatures of the cold side of the TEM since the initialization of the object.|
+|`colorPalette`|Array of the color for each graphs. Set to  `['r','b','g','k','r','b','g','k']` by default.|
+
+##### Example of use
+
+Let's first create an object of class `TempSensor`
+~~~
+rtd = TempSensor(Agilent);
+~~~
+Then let's do a temperature measurement
+~~~
+getTemp(rtd) %This will output the values of each rtds.
+T_0 = getTemp(rtd); %We could also stored the result in a variable
+~~~
+To produce a plot of the temperature of the rtds :
+~~~
+plotTemp(rtd);
+~~~
+It is important to note that this command produce a graph with all the data that was stored using the command `getTemp`. In this exemple, the command was only used twice, so all the graphs would have only two data point.
+
+#### Source
+This object is used to control the power source output voltage, current and if it's on on not.
+
+|Methods|Description|
+|---|---|
+|`Source(BK9201)`|Constructor : This method is automatically used when the object is created. The argument is the object of the BK9201.|
+|`On(obj)`|Turn on the source.|
+|`Off(obj)`|Turn off the source.|
+|`setVoltage(obj,v)`|Set the source at a voltage `v`.|
+|`setCurrent(obj,i)`|Set the source at a current `i`.|
+|`setSource(obj,v,i)`|Set the source at a voltage `v` and a current `i`.|
+
+|Class variables|Description|
+|---|---|
+|`voltage`|The set voltage of the source.|
+|`current`|The set current of the source.|
+
+#### Load
+This object is used to set the resistance load and also to measure the output power of the TEM.
+
+|Methods|Description|
+|---|---|
+|`Load(BK8600)`|Constructor :  This method is automatically used when the object is created. The argument is the object of the BK8600.|
+|`setLoad(obj,r)`|This method set the resistance load to `r`.|
+|`On(obj)`|Turn on the load.|
+|`Off(obj)`|Turn off the load.
+|`getPower(obj)`|This method return the value of the power, voltage and current produce by the TEM (`[p,v,c]`).|
+
+|Class variables|Description|
+|---|---|
+|`resistance`|The set resistance of the load.|
+|`voltage`|The voltage produce by the TEM.|
+|`current`|The current produce by the TEM.|
+|`power`|The power produce by the TEM.|
+
+### Example of a complete experiment.
+The experiment will consist of submitting the TEM to a constant flux on heat, while measuring the output power for a range of resistance load. The measuring need to be done only if the system is in ?régime permanent?. At the end, we want a file with the temperatures of all rtd, the dT, the output voltage and current for a specific resistance load. The load will vary from 0,1 ohms, to 15 ohms with increment of 0,1.
+
+First we need to initialize the connection to all of the devices and make all the objects that goes whit it.  
+
+After, we need to set the source and the load to their starting values and open them. To avoid leaving them on to long after all the experiments are done, it's a good habit to put the commands to turn them off at the end of the code.
+
+For the main loop, all will be done in 3 steps. First, we need to measure the temperature. To do so, we need to invoke the command `getTemp` on the `TempSensor` objet. The return value will be assign to the variable `T_O` in order the save it later if we need to. The same will be done to get the difference of temperature. Once all the measuring is done, we need to check if the measured data is interesting or not, in our case, if the system is in permanent regime. If so, we now need to put all the data (temperatures, DT, load, output power, etc) in the `data`. Once that's done, we can change to resistance load ie, increment the resistance list index (`RL_index`). Then, repeat utill the index is at the last position, set `done` to true.
+
+After the loop, we want to close all the open equipments (source and load). Then, we can output the data stored to an Excel document.
+
+```matlab
+%% configuration
+connection; %the connection script
+temperature = TempSensor(Agilent);
+source = Source(BK9201);
+load = Load(BK8600);
+V = 10;
+I = 2;
+RL = 0.1:0.1:15; % Array of all the resistance to be used : from 0.1 to 15 ohms with an increment of 0.1
+done = false % A bool that will be only true if all the experiments are done
+data = []; % Array with all the data needed
+
+%% Initialization
+setSource(source,V,I) % Set the source voltage and current
+setLoad(load,R[1]); % Set to the first value of R
+On(source); % Open the source
+On(load); % Open the load
+loop_count = 0;
+RL_index = 1;
+
+%% Main loop
+while done == false
+  tic; %Time counter
+  T_0 = getTemp(temperature);
+  [dT_0,T_h,T_c] = getDT(temperature);
+  plotTemp(temperature);
+
+  if loop_count > 10
+    if testPR(temperature);
+      data = [data; T_0 dT_0 T_h T_c RL(RL_index) getPower(load)];
+      RL_count = RL_index +1;
+      if RL_index > size(RL,2)
+        done = true;
+      else
+        setLoad(load,RL(RL_index));
+      end
+    end
+  end
+  loop_count = loop_count +1;
+  pause(10 - toc);
+end  
+
+Off(source);
+Off(load);
+
+%% Data to xls
+filename = ['nameOfExp-' datestr(now,'ddmmyyHHMM')];
+xlswrite(filename,{'T1','T2','T3','T4','T5','T6','T7','T8','DT','T_h','T_c','Load','Load power','Load voltage','Load current'});
+xlswrite(filename,data,1,'A2');
+```
