@@ -121,15 +121,13 @@ while done == false
   [dT_0,T_h,T_c] = getDT(temperature);
   plotTemp(temperature);
 
-  if loop_count > 10
-    if testPR(temperature);
-      data = [data; T_0 dT_0 T_h T_c RL(RL_index) getPower(load)];
-      RL_count = RL_index +1;
-      if RL_index > size(RL,2)
-        done = true;
-      else
-        setLoad(load,RL(RL_index));
-      end
+  if testPR(temperature);
+    data = [data; T_0 dT_0 T_h T_c RL(RL_index) getPower(load)];
+    RL_count = RL_index +1;
+    if RL_index > size(RL,2)
+      done = true;
+    else
+      setLoad(load,RL(RL_index));
     end
   end
   loop_count = loop_count +1;
