@@ -99,6 +99,8 @@ For the main loop, all will be done in 3 steps. First, we need to measure the te
 After the loop, we want to close all the open equipments (source and load). Then, we can output the data stored to an Excel document.
 
 ```matlab
+% Exemple found in the wiki
+
 %% configuration
 temperature = TempSensor;
 source = Source;
@@ -106,14 +108,14 @@ load = Load;
 V = 10;
 I = 2;
 RL = 0.1:0.1:15; % Array of all the resistance to be used : from 0.1 to 15 ohms with an increment of 0.1
-done = false % A bool that will be only true if all the experiments are done
+done = false; % A bool that will be only true if all the experiments are done
 data = []; % Array with all the data needed
 
 %% Initialization
 setSource(source,V,I) % Set the source voltage and current
-setLoad(load,R(1)); % Set to the first value of R
-On(source); % Open the source
-On(load); % Open the load
+setLoad(load,RL(1)); % Set to the first value of R
+on(source); % Open the source
+on(load); % Open the load
 loop_count = 0;
 RL_index = 1;
 
@@ -125,7 +127,8 @@ while done == false
   plotTemp(temperature);
 
   if state(temperature);
-    data = [data; T_0 dT_0 T_h T_c RL(RL_index) getPower(load)];
+    [pl,vl,il] = getPower(load);
+    data = [data; T_0 dT_0 T_h T_c RL(RL_index) pl vl il];
     RL_count = RL_index +1;
     if RL_index > size(RL,2)
       done = true;
@@ -135,10 +138,10 @@ while done == false
   end
   loop_count = loop_count +1;
   pause(10 - toc);
-end  
+end
 
-Off(source);
-Off(load);
+off(source);
+off(load);
 
 %% Data to xls
 filename = ['nameOfExp-' datestr(now,'ddmmyyHHMM')];

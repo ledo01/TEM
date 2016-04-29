@@ -57,8 +57,8 @@ classdef TempSensor < handle
         end
         
         function [dT,T_h0,T_c0] = getDT(obj)
-            T_h(1:2)=polyfit(obj.RTD_pos(1:4),obj.temp(:,1:4),1);
-            T_c(1:2)=polyfit(obj.RTD_pos(5:8),obj.temp(:,5:8),1);
+            T_h(1:2)=polyfit(obj.RTD_pos(1:4),obj.temp(end,1:4),1);
+            T_c(1:2)=polyfit(obj.RTD_pos(5:8),obj.temp(end,5:8),1);
             dT = T_h(2) - T_c(2);
             T_h0 = T_h(2);
             T_c0 = T_c(2);
