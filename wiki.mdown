@@ -1,4 +1,4 @@
-# How to use
+﻿# How to use
 
 ## Equipment set-up
 First, open the Julabo cooler and set the tank temperature. Wait until the wanted tank temperature is obtain before launching any script. Make sure that all three of the data acquisition equipment are on (Agilent MUX, BK8600 Power S source and the BK9201 electric load).
@@ -100,10 +100,9 @@ After the loop, we want to close all the open equipments (source and load). Then
 
 ```matlab
 %% configuration
-connection; %the connection script
-temperature = TempSensor(Agilent);
-source = Source(BK9201);
-load = Load(BK8600);
+temperature = TempSensor;
+source = Source;
+load = Load;
 V = 10;
 I = 2;
 RL = 0.1:0.1:15; % Array of all the resistance to be used : from 0.1 to 15 ohms with an increment of 0.1
@@ -112,7 +111,7 @@ data = []; % Array with all the data needed
 
 %% Initialization
 setSource(source,V,I) % Set the source voltage and current
-setLoad(load,R[1]); % Set to the first value of R
+setLoad(load,R(1)); % Set to the first value of R
 On(source); % Open the source
 On(load); % Open the load
 loop_count = 0;
@@ -125,7 +124,7 @@ while done == false
   [dT_0,T_h,T_c] = getDT(temperature);
   plotTemp(temperature);
 
-  if testPR(temperature);
+  if state(temperature);
     data = [data; T_0 dT_0 T_h T_c RL(RL_index) getPower(load)];
     RL_count = RL_index +1;
     if RL_index > size(RL,2)
