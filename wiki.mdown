@@ -18,7 +18,7 @@ This object allow to measure the temperature of the 8 RTD sensors. It's also use
 
 |Methods| Description  |
 |---|---|
-|`TempSensor(agilent)`|Constructor : This method is automatically used once the object is created.The argument is the object of the Agilent MUX.|
+|`TempSensor(agilent)`|Constructor : This method is automatically used once the object is created. The argument is the object of the Agilent MUX.|
 |`getTemp(obj)`|This method return an array with the temperature of each RTDs going top to bottom. All the temperature recorded are also added to the class variable `temp`.|
 |`getDT(obj)`|This method is used to get the difference of temperature between the two faces of the TEM. The method return an array containing the difference of temperature, the temperature of the hot side and the temperature of the cold side (`[dT,T\_h,T\_c]`).|
 |`plotTemp(obj)`|This method plot 8 subgraph off the temperatures recorded since the initialization of the object.|
@@ -46,14 +46,14 @@ To produce a plot of the temperature of the rtds :
 ~~~matlab
 plotTemp(rtd);
 ~~~matlab
-One can also use the "dot" notation to acces a class methods : 
+One can also use the "dot" notation to acces a class methods :
 ~~~matlab
 rtd.plotTemp
 ~~~
 It is important to note that this command produce a graph with all the data that was stored using the command `getTemp`. In this exemple, the command was only used twice, so all the graphs would have only two data point.
 
 #### Source
-This object is used to control the power source output voltage, current and if it's on on not.
+This object is used to control the power source output voltage, current and if it's on not.
 
 |Methods|Description|
 |---|---|
@@ -94,9 +94,9 @@ First we need to initialize the connection to all of the devices and make all th
 
 After, we need to set the source and the load to their starting values and open them. To avoid leaving them on to long after all the experiments are done, it's a good habit to put the commands to turn them off at the end of the code.
 
-For the main loop, all will be done in 3 steps. First, we need to measure the temperature. To do so, we need to invoke the command `getTemp` on the `TempSensor` objet. The return value will be assign to the variable `T_O` in order the save it later if we need to. The same will be done to get the difference of temperature. Once all the measuring is done, we need to check if the measured data is interesting or not, in our case, if the system is in permanent regime. If so, we now need to put all the data (temperatures, DT, load, output power, etc) in the `data`. Once that's done, we can change to resistance load ie, increment the resistance list index (`RL_index`). Then, repeat utill the index is at the last position, set `done` to true.
+For the main loop, all will be done in 3 steps. First, we need to measure the temperature. To do so, we need to invoke the command `getTemp` on the `TempSensor` objet. The return value will be assign to the variable `T_O` in order the save it later if we need to. The same will be done to get the difference of temperature. Once all the measuring is done, we need to check if the measured data is interesting or not, in our case, if the system is in permanent regime. If so, we now need to put all the data (temperatures, DT, load, output power, etc) in the `data`. Once that's done, we can change to resistance load ie, increment the resistance list index (`RL_index`). Then, repeat until the index is at the last position, set `done` to true.
 
-After the loop, we want to close all the open equipments (source and load). Then, we can output the data stored to an Excel document.
+After the loop, we want to close all the open equipment (source and load). Then, we can output the data stored to an Excel document.
 
 ```matlab
 % Exemple found in the wiki

@@ -1,4 +1,4 @@
 # TEM
 
-See wiki.md for explainantion.
-To use or download, simply click on `Download zip` button.
+See wiki.md for explanation.
+To use or download, simply click on `Download ZIP` button.
