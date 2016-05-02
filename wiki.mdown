@@ -1,14 +1,16 @@
 ﻿# How to use
 
 ## Equipment set-up
-First, open the Julabo cooler and set the tank temperature. Wait until the wanted tank temperature is obtain before launching any script. Make sure that all three of the data acquisition equipment are on (Agilent MUX, BK8600 Power S source and the BK9201 electric load).
+First, open the Julabo cooler and set the tank temperature. Wait until the wanted tank temperature is obtain before launching any script. Make sure that all three of the data acquisition equipment are on (Agilent MUX, BK8600 Power source and the BK9201 electric load).
 
 ## Framework
+
+Several classes have being made so that the interface with the data acquisition equipment is made with simple command.
 ### Structure of a script
 The framework as been made so that all program use this structure :
-1. Initialization : initialization of all the objects to be used (one for each DAQ equipment) and all the variables (like the data that will be saved to a file later on).
+1. Initialization : initialization (creating of the objet) of all the objects to be used (one for each DAQ equipment) and all the variables (like the data that will be saved to a file later on).
 2. Main Loop : The main loop is the place that you will do all your measurements, controlling/changing a variable, controlling the temperature, etc.
-3. Saving to a file : Once the experiment is done, save your collected data to a file for future analysis.
+3. Saving to a file : Once the experiment is done, save your collected data to a file for future analysis. You also need to close all equipement like the source.
 
 ### Objects
 All the interface with the DAQ equipment is done by using object. First, you will need to create an object for the source, the MUX and the load. By doing so, all the proper configuration will be done. Once an object is created, you can use it by employing a method of this object. A description of each object and all of its methods can be found in the next section.
