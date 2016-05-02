@@ -124,29 +124,30 @@ RL_index = 1;
 %% Main loop
 while done == false
   tic; %Time counter
-  T_0 = getTemp(temperature);
-  [dT_0,T_h,T_c] = getDT(temperature);
-  plotTemp(temperature);
+  T_0 = getTemp(temperature); % Do a temperature measurement
+  [dT_0,T_h,T_c] = getDT(temperature); % Get the DT from that measurement
+  plotTemp(temperature); % Plot the temperature
 
-  if state(temperature);
-    [pl,vl,il] = getPower(load);
-    data = [data; T_0 dT_0 T_h T_c RL(RL_index) pl vl il];
-    RL_count = RL_index +1;
+  if state(temperature); % If the system is in steady state
+    [pl,vl,il] = getPower(load); % Measure the power, voltage and current output
+    data = [data; T_0 dT_0 T_h T_c RL(RL_index) pl vl il]; % Put all the data in a array (will be easier to export later)
+    RL_count = RL_index +1; % Increment the load index (get to the next resistance value)
     if RL_index > size(RL,2)
-      done = true;
+      done = true; % But we are at the end : we're done
     else
-      setLoad(load,RL(RL_index));
+      setLoad(load,RL(RL_index)); % Set the load
     end
   end
-  loop_count = loop_count +1;
-  pause(10 - toc);
+  loop_count = loop_count +1; % Increment loop_count (this counter is not really nescessary)
+  pause(10 - toc); % Pause 10 sec - time took to complete all of the above
 end
 
+% Set the source and load to off
 off(source);
 off(load);
 
 %% Data to xls
-filename = ['nameOfExp-' datestr(now,'ddmmyyHHMM')];
+filename = ['nameOfExp-' datestr(now,'ddmmyyHHMM')]; % File name, can be name to anything, but putting the date avoid to overwrite a previous file
 xlswrite(filename,{'T1','T2','T3','T4','T5','T6','T7','T8','DT','T_h','T_c','Load','Load power','Load voltage','Load current'});
 xlswrite(filename,data,1,'A2');
 ```
