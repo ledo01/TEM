@@ -1,0 +1,44 @@
+%% temperature control
+% Exemple of how you can control the temperature or the difference of temperature using a PID algorithm
+% previous_error = 0
+
+%{ algorithm :
+integral = 0
+start:
+  error = setpoint - measured_value
+  integral = integral + error*dt
+  derivative = (error - previous_error)/dt
+  output = Kp*error + Ki*integral + Kd*derivative
+  previous_error = error
+  wait(dt)
+goto start %}
+
+%% configuration
+rtd = TempSensor;
+src = Source;
+load = Load;
+V = 0;
+I = 2;
+setDT = 20; % Random values
+K = [1,1,1]; % [Ki,Kd,Kp] Random values
+dt = 10; % Random values
+
+%% Initialization
+src.setSource(V,I);
+load.setLoad(1);
+src.on; load.on;
+integral = 0;
+rtd.getTemp;
+errorDT = setDT - rtd.getDT;
+previous_error = 0;
+while errorDT > 0
+  tic;
+  rtd.getTemp;
+  rtd.plotTemp;
+  errorDT = setDT - rtd.getDT;
+  integral = integral + errorDT*dt;
+  derivative = (errorDT - previous_error)/dt;
+  V = dot(K,[errorDT,integral,derivative]);
+  previous_error = errorDT;
+  pause(dt - toc);
+end
