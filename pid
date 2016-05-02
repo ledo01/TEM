@@ -1,0 +1,16 @@
+% temperature control
+% Exemple of how you can control the temperature or the difference of temperature using a PID algorithm
+% previous_error = 0
+
+%{ algorithm :
+integral = 0
+start:
+  error = setpoint - measured_value
+  integral = integral + error*dt
+  derivative = (error - previous_error)/dt
+  output = Kp*error + Ki*integral + Kd*derivative
+  previous_error = error
+  wait(dt)
+goto start }%
+
+%% configuration
