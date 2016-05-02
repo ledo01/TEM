@@ -36,16 +36,16 @@ This object allow to measure the temperature of the 8 RTD sensors. It's also use
 Let's first create an object of class `TempSensor`
 ~~~matlab
 rtd = TempSensor(Agilent);
-~~~matlab
+~~~
 Then let's do a temperature measurement
 ~~~matlab
 getTemp(rtd) %This will output the values of each rtds.
 T_0 = getTemp(rtd); %We could also stored the result in a variable
-~~~matlab
+~~~
 To produce a plot of the temperature of the rtds :
 ~~~matlab
 plotTemp(rtd);
-~~~matlab
+~~~
 One can also use the "dot" notation to acces a class methods :
 ~~~matlab
 rtd.plotTemp
